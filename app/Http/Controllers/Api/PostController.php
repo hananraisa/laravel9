@@ -14,10 +14,16 @@ class PostController extends Controller
     public function index()
     {
         //get posts
-        $posts = Post::latest()->paginate(5);
+        // $posts = Post::latest()->paginate(5);
+        $posts = Post::latest()->get();
 
         //return collection of posts as a resource
-        return new PostResource(true, 'List Data Posts', $posts);
+        // return new PostResource(true, 'List Data Posts', $posts);
+        return response()->json([
+                'success' => true,
+                'message' =>    'List Data Posts',
+                'data' => $posts
+        ],200);
     }
 
     public function store(Request $request)

@@ -14,23 +14,17 @@ class PostController extends Controller
     public function index()
     {
         //get posts
-        // $posts = Post::latest()->paginate(5);
-        $posts = Post::latest()->get();
+        $posts = Post::latest()->get(5);
 
         //return collection of posts as a resource
-        // return new PostResource(true, 'List Data Posts', $posts);
-        return response()->json([
-                'success' => true,
-                'message' =>    'List Data Posts',
-                'data' => $posts
-        ],200);
+        return new PostResource(true, 'List Data Posts', $posts);
     }
 
     public function store(Request $request)
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
-            'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'title'     => 'required',
             'content'   => 'required',
         ]);
@@ -41,12 +35,12 @@ class PostController extends Controller
         }
 
         //upload image
-        $image = $request->file('image');
-        $image->storeAs('public/posts', $image->hashName());
+        // $image = $request->file('image');
+        // $image->storeAs('public/posts', $image->hashName());
 
         //create post
         $post = Post::create([
-            'image'     => $image->hashName(),
+            // 'image'     => $image->hashName(),
             'title'     => $request->title,
             'content'   => $request->content,
         ]);
@@ -75,23 +69,24 @@ class PostController extends Controller
         }
 
         //check if image is not empty
-        if ($request->hasFile('image')) {
+        // if ($request->hasFile('image')) {
 
             //upload image
-            $image = $request->file('image');
-            $image->storeAs('public/posts', $image->hashName());
+            // $image = $request->file('image');
+            // $image->storeAs('public/posts', $image->hashName());
 
-            //delete old image
-            Storage::delete('public/posts/'.$post->image);
+            // //delete old image
+            // Storage::delete('public/posts/'.$post->image);
 
             //update post with new image
-            $post->update([
-                'image'     => $image->hashName(),
-                'title'     => $request->title,
-                'content'   => $request->content,
-            ]);
+            // $post->update([
+            //     'image'     => $image->hashName(),
+            //     'title'     => $request->title,
+            //     'content'   => $request->content,
+            // ]);
 
-        } else {
+        // } else 
+        {
 
             //update post without image
             $post->update([
@@ -106,7 +101,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //delete image
-        Storage::delete('public/posts/'.$post->image);
+        // Storage::delete('public/posts/'.$post->image);
 
         //delete post
         $post->delete();

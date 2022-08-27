@@ -2,26 +2,45 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Post;
+use App\Models\Post; 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
-{
+{    
+    /**
+     * index
+     *
+     * @return void
+     */
     public function index()
     {
         //get posts
-        $posts = Post::latest()->get(5);
+        // $posts = Post::latest()->paginate(5);
+        $posts = Post::latest()->get();
 
         //return collection of posts as a resource
+        // return new PostResource(true, 'List Data Posts', $posts);
+        // return response()->json([
+        //         'success' => true,
+        //         'message' =>    'List Data Posts',
+        //         'data' => $posts
+        // ],200);
+
         return new PostResource(true, 'List Data Posts', $posts);
     }
-
+    
+    /**
+     * store
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function store(Request $request)
-    {
+    {   
         //define validation rules
         $validator = Validator::make($request->all(), [
             // 'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -34,7 +53,7 @@ class PostController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        //upload image
+        // //upload image
         // $image = $request->file('image');
         // $image->storeAs('public/posts', $image->hashName());
 
@@ -46,18 +65,17 @@ class PostController extends Controller
         ]);
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Ditambahkan!', $post);
+        return new PostResource(true, 'Data Post Success Ditambahkan!', $post);
+    }
+    // show data
+    public function show (Post $post){
+        // return single post  as a resource
+        return new PostResource(true, 'Data Post Success Ditemukan!', $post);
     }
 
-    public function show(Post $post)
-    {
-        //return single post as a resource
-        return new PostResource(true, 'Data Post Ditemukan!', $post);
-    }
-
-    public function update(Request $request, Post $post)
-    {
-        //define validation rules
+    // upadte data
+    public function update(Request $request, Post $post){
+        // define validator rules
         $validator = Validator::make($request->all(), [
             'title'     => 'required',
             'content'   => 'required',
@@ -68,46 +86,44 @@ class PostController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        //check if image is not empty
-        // if ($request->hasFile('image')) {
+        // // check if image is not empty
+        // if ($request->hasFile('image')){
 
-            //upload image
-            // $image = $request->file('image');
-            // $image->storeAs('public/posts', $image->hashName());
+        //     // up image
+        //     $image = $request->file('image');
+        //     $image->storeAs('public/post', $image->hashName());
 
-            // //delete old image
-            // Storage::delete('public/posts/'.$post->image);
+        //     // delete old image
+        //     Storage::delete('public/posts/' .$post->image);
 
-            //update post with new image
-            // $post->update([
-            //     'image'     => $image->hashName(),
-            //     'title'     => $request->title,
-            //     'content'   => $request->content,
-            // ]);
+        //     // up post w new i
+        //     $post->update([
+        //         'image' => $image->hashName(),
+        //         'title' => $request->title,
+        //         'content' => $request->content,
 
-        // } else 
-        {
+        //     ]);
+        // } else
+         {
 
-            //update post without image
+            // up data w out image
             $post->update([
-                'title'     => $request->title,
-                'content'   => $request->content,
+                'title' => $request->title,
+                'content' => $request->content,
             ]);
         }
-
-        //return response
-        return new PostResource(true, 'Data Post Berhasil Diubah!', $post);
+        // return response
+        return new PostResource(true, 'Data Success Diubah!', $post);
     }
     public function destroy(Post $post)
     {
         //delete image
-        // Storage::delete('public/posts/'.$post->image);
+        Storage::delete('public/posts/'.$post->image);
 
         //delete post
         $post->delete();
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Dihapus!', null);
+        return new PostResource(true, 'Data Post success Dihapus!', null);
     }
 }
-
